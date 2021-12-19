@@ -1,0 +1,132 @@
+$font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+
+
+.display-root {
+  overflow-y: auto;
+  padding: 1rem 10rem;
+}
+
+.display-root main {
+  h1 {
+    margin: 2rem 0;
+    font-size: 2.8rem;
+  }
+
+  h2 {
+    display: flex;
+    position: relative;
+    left: -3rem;
+
+    margin: 2rem 0 1.4rem 0;
+
+    // border-bottom: 2px solid #ccc;
+    font-size: 2rem;
+
+    &::before {
+      display: block;
+      content: "✵";
+
+      width: 3rem;
+    }
+  }
+
+  h3 {
+    margin: 1.4rem 0 1rem 0;
+    font-size: 1.6rem;
+
+    // &::after {
+    //   display: block;
+    //   content: "";
+    //   background-color: red;
+    //   width: 100%;
+    //   height: 1px;
+    // }
+  }
+
+  h4 {
+    margin: 1rem 0 0.6rem;
+
+    color: #666;
+    font-size: 1.2rem;
+  }
+
+
+  p {
+    margin: 1rem 0;
+    text-align: justify;
+  }
+
+  li p {
+    margin: 0.6rem 0;
+  }
+
+  a {
+    display: inline;
+    color: #0074d9;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+
+  ol, ul {
+    margin: 1rem 0;
+    padding-left: 2rem;
+  }
+
+  li {
+    display: list-item;
+  }
+
+  ul li {
+    list-style-type: disc;
+  }
+
+  ol li {
+    list-style-type: decimal;
+  }
+
+  li + li {
+    margin-top: 0.4rem;
+  }
+
+
+  pre {
+    margin: 1rem 0;
+    padding: 1rem 1.6rem;
+
+    background-color: #eee;
+    border-radius: 4px;
+
+    position: relative;
+    overflow-x: auto;
+  }
+
+  code {
+    font-family: $font-mono;
+    font-size: 0.85em;
+  }
+
+  :not(pre) > code {
+    padding: 0.2em 0.4em;
+
+    background-color: rgba(110, 118, 129, 0.1);
+    border-radius: 4px;
+  }
+
+  code[data-language] {
+    &::after {
+      content: attr(data-language);
+
+      position: absolute;
+      right: 4rem;
+      top: 0;
+
+      padding: 0 0.6rem;
+
+      background-color: #ccc;
+      border-radius: 0 0 2px 2px;
+    }
+  }
+}

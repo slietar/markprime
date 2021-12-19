@@ -1,0 +1,66 @@
+.aside {
+  &-root {
+    display: grid;
+    grid-template-rows: auto 1fr auto 2fr;
+
+    background-color: #f7f6f3;
+    overflow-x: hidden;
+  }
+
+  &-title {
+    padding: 1rem;
+    border-bottom: 1px solid #ddd;
+
+    font-weight: 600;
+  }
+
+  &-tree {
+    grid-row: 3;
+    padding: 2rem 0;
+    overflow-y: auto;
+
+    ul {
+      display: flex;
+      flex-direction: column;
+      row-gap: 0.2rem;
+    }
+
+    ul ul {
+      padding-left: 1rem;
+    }
+
+    li._active button::after {
+      background-color: #0002;
+    }
+
+    li > :first-child {
+      padding: 0.4rem 1rem;
+
+      overflow-y: hidden;
+      text-overflow: ellipsis;
+
+      font-size: 0.9rem;
+    }
+
+    button {
+      position: relative;
+
+      &:hover::after {
+        background-color: #0001;
+      }
+
+      &::after {
+        content: "";
+
+        width: 500px;
+        height: 100%;
+
+        position: absolute;
+        left: -250px;
+        top: 0;
+
+        transition: background-color 150ms;
+      }
+    }
+  }
+}
