@@ -1,7 +1,9 @@
 {
   "scripts": {
+    "build": "npm run build:css && npm run build:html && npm run build:js",
     "build:css": "sass styles/main.scss dist/styles.css --no-source-map",
     "build:css:watch": "sass styles/main.scss dist/styles.css --watch",
+    "build:html": "mkdir -p dist && cp index.html dist",
     "build:js": "esbuild --bundle  --loader:.js=jsx --minify --outfile=dist/scripts.js src/index.js",
     "build:js:watch": "esbuild --bundle --loader:.js=jsx --outfile=dist/scripts.js --watch src/index.js"
   },
