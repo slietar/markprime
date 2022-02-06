@@ -53,3 +53,15 @@ export async function* mapAsync(iterable, callback) {
     yield await callback(item, index++);
   }
 }
+
+export async function findAsync(arr, fn) {
+  for (let index = 0; index < arr.length; index++) {
+    let item = arr[index];
+
+    if (await fn(item, index, arr)) {
+      return item;
+    }
+  }
+
+  return undefined;
+}

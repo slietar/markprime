@@ -3,7 +3,9 @@ import * as React from 'react';
 import Display from './components/display';
 import Select from './components/select';
 import Aside from './components/aside';
+import icons from './icons';
 import pool from './pool';
+import Store from './store';
 
 
 export default class App extends React.Component {
@@ -14,11 +16,19 @@ export default class App extends React.Component {
     this.fileController = null;
     this.fileOffsets = {};
     this.refDisplay = React.createRef();
+    this.store = new Store((recentFiles) => {
+      this.setState({ recentFiles });
+    });
 
     this.state = {
       activeFile: null,
+      recentFiles: null,
       tree: null
     };
+
+    pool.add(async () => {
+      await this.store.initialize();
+    });
   }
 
   selectFile(fileId) {
@@ -62,15 +72,24 @@ export default class App extends React.Component {
             </div>
           )
           : (
-            <Select onSelect={(backend) => {
-              pool.add(async () => {
-                let tree = await backend.loadTree();
+            <Select recentFiles={this.state.recentFiles}
+              onSelect={(backend) => {
+                pool.add(async () => {
+                  await backend.syncStore?.(this.store);
+                  let tree = await backend.loadTree();
 
-                this.backend = backend;
-                this.setState({ tree });
-              });
-            }}/>
+                  this.backend = backend;
+                  this.setState({ tree });
+                });
+              }}
+              onRemoveRecentFile={(infoId) => {
+                pool.add(async () => {
+                  this.store.remove(infoId);
+                });
+              }} />
           )}
+
+        <div dangerouslySetInnerHTML={{ __html: icons }} />
       </>
     );
   }

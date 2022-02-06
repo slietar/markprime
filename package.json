@@ -6,8 +6,8 @@
     "build:css": "sass styles/main.scss dist/styles.css --no-source-map",
     "build:css:watch": "sass styles/main.scss dist/styles.css --watch",
     "build:html": "mkdir -p dist && cp index.html dist",
-    "build:js": "esbuild --bundle  --loader:.js=jsx --minify --outfile=dist/scripts.js src/index.js",
-    "build:js:watch": "esbuild --bundle --loader:.js=jsx --outfile=dist/scripts.js --watch src/index.js"
+    "build:js": "esbuild --bundle --define:Version='\"r1\"' --loader:.js=jsx --minify --outfile=dist/scripts.js src/index.js",
+    "build:js:watch": "npm run build:js -- --watch"
   },
   "devDependencies": {
     "esbuild": "^0.14.5",
@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "highlight.js": "^11.3.1",
+    "idb-keyval": "^6.1.0",
     "markdown-it": "^12.3.0",
     "punycode": "^2.1.1",
     "react": "^17.0.2",

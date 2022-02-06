@@ -8,6 +8,10 @@ export default class FSAccessBackend {
     this._source = source;
   }
 
+  async syncStore(store) {
+    store.add(...this._source);
+  }
+
   async loadTree() {
     let index = 0;
     this._files = {};
@@ -41,31 +45,13 @@ export default class FSAccessBackend {
       }
     };
 
-    return Array.isArray(this._source)
+    return (this._source.length > 1) || (this._source[0] instanceof FileSystemFileHandle)
       ? {
         kind: 'dir',
         name: null,
         children: await Promise.all(this._source.map((handle) => processHandle(handle)))
       }
-      : await processHandle(this._source);
-
-    for (let handle of this._source) {
-      let contents = await (await handle.getFile()).text();
-      let titleLine = contents.split('\n')
-        .find((line) => line.startsWith('#'));
-
-      let name = titleLine
-        ? titleLine.substring(1).trim()
-        : handle.name;
-
-      files.push({
-        id: handle.name,
-        name,
-        contents
-      });
-    }
-
-    return files;
+      : await processHandle(this._source[0]);
   }
 
   async get(fileId) {

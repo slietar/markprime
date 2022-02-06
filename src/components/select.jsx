@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import Icon from './icon';
 import FilesBackend from '../backends/files';
 import FSAccessBackend from '../backends/fs-access';
 import pool from '../pool';
@@ -86,13 +87,77 @@ export default class Select extends React.Component {
                   let handle = await util.wrapAbortable(window.showDirectoryPicker());
 
                   if (handle) {
-                    let backend = new FSAccessBackend(handle);
+                    let backend = new FSAccessBackend([handle]);
                     this.props.onSelect(backend);
                   }
                 })
               }}>Select directory</button>
             )}
           </div>
+
+          {(this.props.recentFiles?.length > 0) && (
+            <div className="recent-root">
+              <div className="recent-header">
+                <h2 className="recent-title">Recent files</h2>
+              </div>
+              <ul className="recent-list">
+                {this.props.recentFiles
+                  .sort((a, b) => b.date - a.date)
+                  .map((info) => (
+                    <li className="recent-entry" key={info.id}>
+                      <button className="recent-name" onClick={() => {
+                        pool.add(async () => {
+                          let status = await info.handle.requestPermission();
+
+                          if (status === 'granted') {
+                            let backend = new FSAccessBackend([info.handle]);
+                            this.props.onSelect(backend);
+                          }
+                        });
+                      }}>
+                        <Icon name={info.handle.kind} />
+                        <span>{info.handle.name}</span>
+                      </button>
+                      <button className="recent-remove" onClick={() => {
+                        this.props.onRemoveRecentFile(info.id);
+                      }}>
+                        <Icon name="close" />
+                      </button>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          )}
+{/*
+          <div className="recent-root">
+            <div className="recent-header">
+              <h2 className="recent-title">Recent files</h2>
+            </div>
+            <ul className="recent-list">
+              <li className="recent-entry">
+                <button className="recent-name">
+                  <Icon name="file" />
+                  <span>README.md</span>
+                </button>
+                <button className="recent-remove"><Icon name="close" /></button>
+              </li>
+              <li className="recent-entry">
+                <button className="recent-name">
+                  <Icon name="file" />
+                  <span>concepts</span>
+                </button>
+                <button className="recent-remove"><Icon name="close" /></button>
+              </li>
+              <li className="recent-entry">
+                <button className="recent-name">
+                  <Icon name="directory" />
+                  <span>concepts</span>
+                </button>
+                <button className="recent-remove"><Icon name="close" /></button>
+              </li>
+            </ul>
+          </div> */}
         </div>
       </div>
     );

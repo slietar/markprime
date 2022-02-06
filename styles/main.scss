@@ -14,7 +14,7 @@ html {
 
   font-family: $font-serif;
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.4;
 }
 
 body, #root {
@@ -28,4 +28,15 @@ body, #root {
   // grid-template-rows: 1fr;
 
   height: 100%;
+}
+
+
+$icon-size: 16px;
+
+.icon {
+  width: $icon-size;
+  height: $icon-size;
+
+  stroke: none;
+  fill: currentColor;
 }
