@@ -1,22 +1,70 @@
+%illustrated-button {
+  display: flex;
+  align-items: center;
+  column-gap: 0.8rem;
+
+  --border-color: #ddd;
+
+  color: #666;
+  font-weight: 500;
+
+  transition: color 150ms;
+
+  &:hover {
+    color: #000;
+  }
+}
+
+
 .aside {
   &-root {
     display: grid;
-    grid-template-rows: auto 1fr auto 2fr;
+    grid-template-rows: auto 1fr auto;
 
     background-color: #f7f6f3;
+    border-right: 1px solid #eee;
+    box-shadow: 2px 0 6px #0001;
+
     overflow-x: hidden;
   }
 
-  &-title {
-    padding: 1rem;
-    border-bottom: 1px solid #ddd;
+  &-header {
+    display: grid;
+    grid-template-columns: auto 1fr;
 
+    border-bottom: 1px solid #ddd;
+  }
+
+  &-title {
+    padding: 1rem 1.4rem;
     font-weight: 600;
   }
 
+  &-back {
+    @extend %illustrated-button;
+
+    padding: 1rem;
+    border-right: 1px solid var(--border-color);
+
+    span {
+      max-width: 120px;
+      overflow-x: hidden;
+
+      transition: max-width ease-out 200ms, margin-right ease-out 200ms, opacity ease-out 200ms;
+    }
+
+    &:not(:hover) {
+      span {
+        max-width: 0;
+        margin-right: -0.8rem;
+
+        opacity: 0;
+      }
+    }
+  }
+
   &-tree {
-    grid-row: 3;
-    padding: 2rem 0;
+    padding: 1.2rem 1rem 1.2rem 0.6rem;
     overflow-y: auto;
 
     ul {
@@ -26,41 +74,62 @@
     }
 
     ul ul {
-      padding-left: 1rem;
+      padding-left: 1.2rem;
     }
 
-    li._active button::after {
-      background-color: #0002;
+    li._active button {
+      background-color: #0001;
     }
 
     li > :first-child {
-      padding: 0.4rem 1rem;
+      padding: 0.4rem 0.6rem;
 
       overflow-y: hidden;
       text-overflow: ellipsis;
 
       font-size: 0.9rem;
+
+      &:not(button) {
+        display: flex;
+        align-items: center;
+        column-gap: 0.6rem;
+
+        font-weight: 500;
+
+        &::before, &::after {
+          content: "";
+          height: 1px;
+          margin-top: 1px;
+        }
+
+        &::before {
+          width: 0.6rem;
+          background-color: #333;
+        }
+
+        &::after {
+          background-image: linear-gradient(to left, transparent 0%, #999 2rem, #333 100%);
+          flex-grow: 1;
+        }
+      }
     }
 
     button {
-      position: relative;
+      max-width: max-content;
+      border-radius: 4px;
 
-      &:hover::after {
-        background-color: #0001;
-      }
+      transition: background-color 150ms;
 
-      &::after {
-        content: "";
-
-        width: 500px;
-        height: 100%;
-
-        position: absolute;
-        left: -250px;
-        top: 0;
-
-        transition: background-color 150ms;
+      &:hover {
+        background-color: #0000000a;
       }
     }
+  }
+
+  &-preferences {
+    @extend %illustrated-button;
+
+    padding: 1rem 1.4rem;
+    border-top: 1px solid var(--border-color);
   }
 }

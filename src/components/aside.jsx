@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import Icon from './icon';
 import * as util from '../util';
 
 
@@ -9,7 +10,7 @@ export default class Aside extends React.Component {
       switch (item.kind) {
         case 'dir': return (
           <li key={item.name}>
-            <div>{item.name}</div>
+            <div><span>{item.name}</span></div>
             {(item.children.length > 0) && renderItems(item.children)}
           </li>
         );
@@ -39,11 +40,22 @@ export default class Aside extends React.Component {
 
     return (
       <aside className="aside-root">
-        <div className="aside-title">{this.props.tree.name ?? 'Notebook'}</div>
+        <div className="aside-header">
+          <button className="aside-back" onClick={() => {
+            this.props.onClose();
+          }}>
+            <Icon name="arrow-back" />
+            <span>Home</span>
+          </button>
+          <div className="aside-title">{this.props.tree.name ?? 'Notebook'}</div>
+        </div>
         <div className="aside-tree">
           {renderItems(this.props.tree.children)}
         </div>
-
+        <button type="button" className="aside-preferences">
+          <Icon name="settings" />
+          <span>Preferences</span>
+        </button>
       </aside>
     );
   }

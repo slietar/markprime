@@ -65,9 +65,14 @@ export default class App extends React.Component {
         {this.state.tree
           ? (
             <div className="window-root">
-              <Aside activeFileId={this.state.activeFile?.id} tree={this.state.tree} onSelect={(fileId) => {
-                this.selectFile(fileId);
-              }} />
+              <Aside activeFileId={this.state.activeFile?.id} tree={this.state.tree}
+                onClose={() => {
+                  this.backend = null;
+                  this.setState({ tree: null });
+                }}
+                onSelect={(fileId) => {
+                  this.selectFile(fileId);
+                }} />
               {this.state.activeFile && <Display file={this.state.activeFile} ref={this.refDisplay} />}
             </div>
           )
