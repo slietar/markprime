@@ -1,4 +1,6 @@
 {
+  "name": "md-viewer",
+  "version": "1.0.0",
   "scripts": {
     "build": "npm run build:css && npm run build:html && npm run build:js",
     "build:css": "sass styles/main.scss dist/styles.css --no-source-map",
