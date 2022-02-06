@@ -71,6 +71,25 @@ $font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation M
     }
   }
 
+  strong {
+    font-weight: 600;
+  }
+
+  blockquote {
+    margin: 1rem 0;
+    padding: 0.6rem 0 0.6rem 1rem;
+
+    border-left: 4px solid #ddd;
+
+    > :first-child {
+      margin-top: 0;
+    }
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+  }
+
 
   ol, ul {
     margin: 1rem 0;
@@ -130,5 +149,24 @@ $font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation M
       background-color: #ccc;
       border-radius: 0 0 2px 2px;
     }
+  }
+
+
+  table {
+    margin: 2rem 0;
+    border-collapse: collapse;
+  }
+
+  th {
+    font-weight: 600;
+  }
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 0.4rem 0.8rem;
+  }
+
+  tbody tr:nth-child(odd) {
+    background-color: #f8f8f8;
   }
 }
