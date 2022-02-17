@@ -2,7 +2,7 @@
   "name": "md-viewer",
   "version": "1.0.0",
   "scripts": {
-    "build": "npm run build:css && npm run build:html && npm run build:js",
+    "build": "npm run build:css && npm run build:html && npm run build:js && npm run build:js:sw",
     "build:css": "sass styles/main.scss dist/styles.css --no-source-map",
     "build:css:watch": "sass styles/main.scss dist/styles.css --watch",
     "build:html": "mkdir -p dist && cp index.html dist",
