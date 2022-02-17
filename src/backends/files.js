@@ -1,5 +1,4 @@
 import pool from '../pool';
-import * as util from '../util';
 
 
 export default class FilesBackend {
@@ -28,7 +27,8 @@ export default class FilesBackend {
     return {
       id: fileId,
       contents: await file.text(),
-      lastModified: file.lastModified
+      lastModified: file.lastModified,
+      mdx: file.name.endsWith('.mdx')
     };
   }
 

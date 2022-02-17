@@ -58,8 +58,13 @@ export default class Select extends React.Component {
                   let handles = await util.wrapAbortable(window.showOpenFilePicker({
                     multiple: true,
                     types: [
-                      { description: 'Markdown files',
-                        accept: { 'text/markdown': ['.md'] } }
+                      { description: 'Markdown or MDX files',
+                        accept: {
+                          'text/markdown': ['.md'],
+                          'text/mdx': ['.mdx']
+                        } },
+                      // { description: 'MDX files',
+                      //   accept: { 'text/*': ['.mdx'] } }
                     ]
                   }));
 
@@ -72,7 +77,7 @@ export default class Select extends React.Component {
                 let input = document.createElement('input');
                 input.multiple = true;
                 input.type = 'file';
-                input.accept = '.md,text/markdown';
+                input.accept = '.md,.mdx,text/markdown,text/mdx';
                 input.addEventListener('change', () => {
                   let backend = new FilesBackend(input.files);
                   this.props.onSelect(backend);
@@ -108,7 +113,6 @@ export default class Select extends React.Component {
                       <button className="recent-name" onClick={() => {
                         pool.add(async () => {
                           let status = await info.handle.requestPermission();
-
                           if (status === 'granted') {
                             let backend = new FSAccessBackend([info.handle]);
                             this.props.onSelect(backend);

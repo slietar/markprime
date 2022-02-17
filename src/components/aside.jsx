@@ -5,6 +5,12 @@ import * as util from '../util';
 
 
 export default class Aside extends React.Component {
+  componentDidMount() {
+    if (!this.props.activeFileId) {
+      this.props.onSelect(this.props.tree.children[0].id);
+    }
+  }
+
   render() {
     let renderItem = (item) => {
       switch (item.kind) {

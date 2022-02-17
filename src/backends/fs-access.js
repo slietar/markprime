@@ -25,7 +25,7 @@ export default class FSAccessBackend {
             children: (
               await util.collectAsync(
                 util.mapAsync(
-                  util.filterAsync(handle.values(), (h) => (h.kind !== 'file') || h.name.endsWith('.md')),
+                  util.filterAsync(handle.values(), (h) => (h.kind !== 'file') || h.name.endsWith('.md') || h.name.endsWith('.mdx')),
                   (h) => processHandle(h)
                 )
               )
@@ -61,7 +61,8 @@ export default class FSAccessBackend {
     return {
       id: fileId,
       contents: await file.text(),
-      lastModified: file.lastModified
+      lastModified: file.lastModified,
+      mdx: file.name.endsWith('.mdx')
     };
   }
 
@@ -79,7 +80,8 @@ export default class FSAccessBackend {
           callback({
             id: fileId,
             contents: await file.text(),
-            lastModified
+            lastModified,
+            mdx: file.name.endsWith('.mdx')
           }, initial);
         }
       });

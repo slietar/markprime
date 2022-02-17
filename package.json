@@ -6,19 +6,24 @@
     "build:css": "sass styles/main.scss dist/styles.css --no-source-map",
     "build:css:watch": "sass styles/main.scss dist/styles.css --watch",
     "build:html": "mkdir -p dist && cp index.html dist",
-    "build:js": "esbuild --bundle --define:Version='\"r1\"' --loader:.js=jsx --minify --outfile=dist/scripts.js src/index.js",
-    "build:js:watch": "npm run build:js -- --watch"
+    "build:js:prepare": "mkdir -p dist && cp node_modules/esbuild-wasm/esbuild.wasm dist",
+    "build:js": "npm run build:js:prepare && esbuild --bundle --define:Version='\"r1\"' --loader:.js=jsx --minify --outfile=dist/scripts.js src/index.js",
+    "build:js:watch": "npm run build:js:prepare && npm run build:js -- --sourcemap --watch",
+    "build:js:sw": "esbuild --bundle --minify --outfile=dist/service-worker.js src/service-worker.js"
   },
   "devDependencies": {
     "esbuild": "^0.14.5",
     "sass": "^1.45.0"
   },
   "dependencies": {
+    "@mdx-js/mdx": "^2.0.0",
+    "esbuild-wasm": "^0.14.20",
     "highlight.js": "^11.3.1",
     "idb-keyval": "^6.1.0",
     "markdown-it": "^12.3.0",
     "punycode": "^2.1.1",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "url": "^0.11.0"
   }
 }

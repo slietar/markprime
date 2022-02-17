@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import Display from './components/display';
+import DisplayMdx from './components/display-mdx';
 import Select from './components/select';
 import Aside from './components/aside';
 import icons from './icons';
@@ -42,12 +43,6 @@ export default class App extends React.Component {
     }
 
     if (fileId !== null) {
-      // pool.add(async () => {
-      //   this.setState({
-      //     activeFile: await this.backend.get(fileId)
-      //   });
-      // });
-
       this.fileController = new AbortController();
       this.backend.watch(fileId, (activeFile, initial) => {
         this.setState({ activeFile }, () => {
@@ -73,7 +68,11 @@ export default class App extends React.Component {
                 onSelect={(fileId) => {
                   this.selectFile(fileId);
                 }} />
-              {this.state.activeFile && <Display file={this.state.activeFile} ref={this.refDisplay} />}
+              {this.state.activeFile && (
+                this.state.activeFile.mdx
+                  ? <DisplayMdx file={this.state.activeFile} ref={this.refDisplay} />
+                  : <Display file={this.state.activeFile} ref={this.refDisplay} />
+              )}
             </div>
           )
           : (
