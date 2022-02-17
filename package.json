@@ -1,13 +1,13 @@
 {
   "name": "md-viewer",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "scripts": {
     "build": "npm run build:css && npm run build:html && npm run build:js && npm run build:js:sw",
     "build:css": "sass styles/main.scss dist/styles.css --no-source-map",
     "build:css:watch": "sass styles/main.scss dist/styles.css --watch",
     "build:html": "mkdir -p dist && cp index.html dist",
     "build:js:prepare": "mkdir -p dist && cp node_modules/esbuild-wasm/esbuild.wasm dist",
-    "build:js": "npm run build:js:prepare && esbuild --bundle --define:Version='\"r1\"' --loader:.js=jsx --minify --outfile=dist/scripts.js src/index.js",
+    "build:js": "npm run build:js:prepare && esbuild --bundle --define:Version='\"r2\"' --loader:.js=jsx --minify --outfile=dist/scripts.js src/index.js",
     "build:js:watch": "npm run build:js:prepare && npm run build:js -- --sourcemap --watch",
     "build:js:sw": "esbuild --bundle --minify --outfile=dist/service-worker.js src/service-worker.js"
   },
