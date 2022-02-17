@@ -63,8 +63,6 @@ export default class Select extends React.Component {
                           'text/markdown': ['.md'],
                           'text/mdx': ['.mdx']
                         } },
-                      // { description: 'MDX files',
-                      //   accept: { 'text/*': ['.mdx'] } }
                     ]
                   }));
 
@@ -133,35 +131,6 @@ export default class Select extends React.Component {
               </ul>
             </div>
           )}
-{/*
-          <div className="recent-root">
-            <div className="recent-header">
-              <h2 className="recent-title">Recent files</h2>
-            </div>
-            <ul className="recent-list">
-              <li className="recent-entry">
-                <button className="recent-name">
-                  <Icon name="file" />
-                  <span>README.md</span>
-                </button>
-                <button className="recent-remove"><Icon name="close" /></button>
-              </li>
-              <li className="recent-entry">
-                <button className="recent-name">
-                  <Icon name="file" />
-                  <span>concepts</span>
-                </button>
-                <button className="recent-remove"><Icon name="close" /></button>
-              </li>
-              <li className="recent-entry">
-                <button className="recent-name">
-                  <Icon name="directory" />
-                  <span>concepts</span>
-                </button>
-                <button className="recent-remove"><Icon name="close" /></button>
-              </li>
-            </ul>
-          </div> */}
         </div>
       </div>
     );

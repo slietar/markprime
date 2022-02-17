@@ -29,8 +29,10 @@ $font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation M
 
 
 .display-root main {
-  margin: 0 auto;
+  width: 100%;
   max-width: 800px;
+
+  margin: 0 auto;
   line-height: 1.6;
 
   h1 {

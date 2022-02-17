@@ -63,7 +63,10 @@ export default class App extends React.Component {
               <Aside activeFileId={this.state.activeFile?.id} tree={this.state.tree}
                 onClose={() => {
                   this.backend = null;
-                  this.setState({ tree: null });
+                  this.setState({
+                    activeFile: null,
+                    tree: null
+                  });
                 }}
                 onSelect={(fileId) => {
                   this.selectFile(fileId);
