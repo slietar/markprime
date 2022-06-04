@@ -8,28 +8,21 @@ export default class Aside extends React.Component {
   render() {
     let renderItem = (item) => {
       switch (item.kind) {
-        case 'dir': return (
+        case 'directory': return (
           <li key={item.name}>
             <div><span>{item.name}</span></div>
             {(item.children.length > 0) && renderItems(item.children)}
           </li>
         );
+
         case 'file': return (
           <li className={util.formatClass({ '_active': (this.props.activeFileId === item.id) })} key={item.name}>
             <button type="button" onClick={() => {
-              this.props.onSelect(item.id);
+              this.props.onSelect(item);
             }}>{item.name}</button>
           </li>
         );
       }
-      return (
-        <li className={util.formatClass({ '_active': (item.kind === 'file') && (this.props.activeFileId === item.id) })} key={item.name}>
-          <button type="button" onClick={() => {
-            this.props.onSelect(item.id);
-          }}>{item.name}</button>
-          {(item.kind === 'dir') && (item.children.length > 0) && renderItems(item.children)}
-        </li>
-      )
     };
 
     let renderItems = (items) => (
@@ -47,7 +40,7 @@ export default class Aside extends React.Component {
             <Icon name="arrow-back" />
             <span>Home</span>
           </button>
-          <div className="aside-title">{this.props.tree.name ?? 'Notebook'}</div>
+          <div className="aside-title">{this.props.name ?? 'Untitled workspace'}</div>
         </div>
         <div className="aside-tree">
           {renderItems(this.props.tree.children)}

@@ -8,6 +8,7 @@ export default class FSAccessBackend {
 
   constructor(source, id = crypto.randomUUID()) {
     this.id = id;
+    this.tree = null;
 
     this._files = null;
     this._source = source;
@@ -82,6 +83,10 @@ export default class FSAccessBackend {
     let processHandle = async (handle) => {
       switch (handle.kind) {
         case 'directory': {
+          if (handle.queryPermission() !== 'granted') {
+            await handle.requestPermission();
+          }
+
           return {
             kind: 'directory',
             name: handle.name,
@@ -92,7 +97,7 @@ export default class FSAccessBackend {
                   (h) => processHandle(h)
                 )
               )
-            ).filter((item) => (item.kind !== 'dir') || (item.children.length > 0))
+            ).filter((item) => (item.kind !== 'directory') || (item.children.length > 0))
           };
         }
         case 'file': {
@@ -109,13 +114,16 @@ export default class FSAccessBackend {
       }
     };
 
-    return (this._source.type === 'multiple')
+    let tree = (this._source.type === 'multiple')
       ? {
         kind: 'directory',
         name: null,
         children: await Promise.all(this._source.handles.map((handle) => processHandle(handle)))
       }
       : await processHandle(this._source.handle);
+
+    this.tree = tree;
+    return tree;
   }
 
   async get(fileId) {
@@ -136,17 +144,16 @@ export default class FSAccessBackend {
 
     let update = (initial) => {
       pool.add(async () => {
+        if (handle.queryPermission() !== 'granted') {
+          await handle.requestPermission();
+        }
+
         let file = await handle.getFile();
 
         if (file.lastModified !== lastModified) {
           lastModified = file.lastModified;
 
-          callback({
-            id: fileId,
-            contents: await file.text(),
-            lastModified,
-            mdx: file.name.endsWith('.mdx')
-          }, initial);
+          callback(await file.text(), initial);
         }
       });
     };

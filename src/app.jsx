@@ -1,9 +1,8 @@
 import * as React from 'react';
 
-import Display from './components/display';
-import DisplayMdx from './components/display-mdx';
+import Backends from './backends';
 import Home from './components/home';
-import Aside from './components/aside';
+import Workspace from './components/workspace';
 import icons from './icons';
 import pool from './pool';
 import Store from './store';
@@ -13,19 +12,12 @@ export default class App extends React.Component {
   constructor() {
     super();
 
-    this.backend = null;
-    this.fileController = null;
-    this.fileOffsets = {};
-    this.refDisplay = React.createRef();
     this.store = new Store((workspaces) => {
       this.setState({ workspaces });
     });
 
     this.state = {
-      activeFile: null,
-      recentFiles: null,
-      tree: null,
-
+      current: null,
       workspaces: null
     };
 
@@ -34,52 +26,16 @@ export default class App extends React.Component {
     });
   }
 
-  selectFile(fileId) {
-    if (this.fileController) {
-      this.fileController.abort();
-      this.fileController = null;
-    }
-
-    if (this.state.activeFile) {
-      this.fileOffsets[this.state.activeFile.id] = this.refDisplay.current.getOffset();
-    }
-
-    if (fileId !== null) {
-      this.fileController = new AbortController();
-      this.backend.watch(fileId, (activeFile, initial) => {
-        this.setState({ activeFile }, () => {
-          if (initial) {
-            this.refDisplay.current.setOffset(this.fileOffsets[fileId] ?? 0);
-          }
-        });
-      }, { signal: this.fileController.signal });
-    }
-  }
-
   render() {
     return (
       <>
-        {this.state.tree
-          ? (
-            <div className="window-root">
-              <Aside activeFileId={this.state.activeFile?.id} tree={this.state.tree}
-                onClose={() => {
-                  this.backend = null;
-                  this.setState({
-                    activeFile: null,
-                    tree: null
-                  });
-                }}
-                onSelect={(fileId) => {
-                  this.selectFile(fileId);
-                }} />
-              {this.state.activeFile && (
-                this.state.activeFile.mdx
-                  ? <DisplayMdx file={this.state.activeFile} ref={this.refDisplay} />
-                  : <Display file={this.state.activeFile} ref={this.refDisplay} />
-              )}
-            </div>
-          )
+        {this.state.current
+          ? <Workspace
+            backend={this.state.current.backend}
+            workspace={this.state.current.workspace}
+            onClose={() => {
+              this.setState({ current: null });
+            }} />
           : (
             <Home
               workspaces={this.state.workspaces}
@@ -98,11 +54,34 @@ export default class App extends React.Component {
                     ...this.state.workspaces,
                     [workspace.id]: workspace
                   });
+
+                  this.setState({
+                    current: {
+                      backend,
+                      workspace
+                    }
+                  });
                 });
               }}
-              onRemoveRecentFile={(infoId) => {
+              openWorkspace={(workspaceId) => {
+                let workspace = this.state.workspaces[workspaceId];
+                let backend = new Backends[workspace.type](workspace.source, workspace.id);
+
                 pool.add(async () => {
-                  this.store.remove(infoId);
+                  await backend.loadTree();
+
+                  this.setState({
+                    current: {
+                      backend,
+                      workspace
+                    }
+                  });
+                });
+              }}
+              removeWorkspace={(workspaceId) => {
+                pool.add(async () => {
+                  let { [workspaceId]: _, ...workspaces } = this.state.workspaces;
+                  await this.store.save(workspaces);
                 });
               }} />
           )}

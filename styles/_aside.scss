@@ -50,7 +50,7 @@
       max-width: 120px;
       overflow-x: hidden;
 
-      transition: max-width ease-out 200ms, margin-right ease-out 200ms, opacity ease-out 200ms;
+      transition: max-width 200ms, margin-right 200ms, opacity 200ms;
     }
 
     &:not(:hover) {
@@ -86,8 +86,6 @@
 
       overflow-y: hidden;
       text-overflow: ellipsis;
-
-      font-size: 0.9rem;
 
       &:not(button) {
         display: flex;
