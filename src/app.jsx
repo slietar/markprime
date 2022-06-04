@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import Display from './components/display';
 import DisplayMdx from './components/display-mdx';
-import Select from './components/select';
+import Home from './components/home';
 import Aside from './components/aside';
 import icons from './icons';
 import pool from './pool';
@@ -79,7 +79,7 @@ export default class App extends React.Component {
             </div>
           )
           : (
-            <Select recentFiles={this.state.recentFiles}
+            <Home recentFiles={this.state.recentFiles}
               onSelect={(backend) => {
                 pool.add(async () => {
                   await backend.syncStore?.(this.store);

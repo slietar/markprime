@@ -3,7 +3,7 @@
 @use "./reset";
 @use "./aside";
 @use "./display";
-@use "./select";
+@use "./home";
 
 
 $font-serif: ui-sans-serif, system-ui, -apple-system, sans-serif;
@@ -13,7 +13,7 @@ html {
   height: 100%;
 
   font-family: $font-serif;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.4;
 }
 

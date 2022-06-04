@@ -1,161 +1,176 @@
-*, *::before, *::after {
-  box-sizing: inherit;
-}
+@layer reset {
+  *, *::before, *::after {
+    box-sizing: inherit;
+  }
 
-html {
-  box-sizing: border-box;
-}
+  html {
+    box-sizing: border-box;
+  }
 
-body {
-  margin: initial;
-}
+  body {
+    margin: initial;
+  }
 
-a {
-  display: block;
-
-  color: inherit;
-  text-decoration: initial;
-
-  &:focus {
+  :focus {
     outline: initial;
   }
-}
-
-ol, ul {
-  margin: initial;
-  padding: initial;
-}
-
-li {
-  display: block;
-  list-style-type: none;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  margin: initial;
-}
-
-// Override certain user agent rules such as section > h1.
-h1 {
-  font-size: 2em;
-}
-
-p {
-  margin: initial;
 
   a {
-    display: inline;
+    display: block;
+
+    color: inherit;
+    text-decoration: initial;
+
+    &:focus {
+      outline: initial;
+    }
   }
-}
 
-input, button, select, textarea {
-  display: block;
-  width: 100%;
+  ul {
+    margin: initial;
+    padding: initial;
+  }
 
-  margin: initial;
-  padding: initial;
+  li {
+    display: block;
+    list-style-type: none;
+  }
 
-  appearance: none;
-  background: initial;
-  border: initial;
-  outline: initial;
+  h1, h2, h3, h4, h5, h6 {
+    margin: initial;
+  }
 
-  color: inherit;
-  font: inherit;
-  text-align: initial;
+  h1 {
+    // Overrides user agent stylesheet such as section > h1.
+    font-size: 2em;
+  }
 
-  &:disabled {
-    color: initial;
+  p {
+    margin: initial;
+  }
+
+  input, button, select, textarea {
+    display: block;
+    inline-size: 100%;
+
+    margin: initial;
+    padding: initial;
+
+    appearance: none;
+    background: initial;
+    border: initial;
+    outline: initial;
+
+    color: inherit;
+    font: inherit;
+    text-align: initial;
+
+    &:disabled {
+      color: inherit;
+      opacity: initial;
+      pointer-events: none;
+    }
+
+    &:active {
+      color: currentColor;
+    }
+  }
+
+  option {
+    padding: initial;
+  }
+
+  input::placeholder {
     opacity: initial;
-    pointer-events: none;
   }
 
-  &:active {
-    color: currentColor;
+  input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
   }
-}
 
-option {
-  padding: initial;
-}
+  input[type="submit"], button {
+    cursor: pointer;
 
-input::placeholder {
-  opacity: initial;
-}
-
-input[type="search"]::-webkit-search-decoration {
-  -webkit-appearance: none;
-}
-
-input[type="submit"], button {
-  cursor: pointer;
-
-  &:disabled {
-    pointer-events: none;
+    &:disabled {
+      pointer-events: none;
+    }
   }
-}
 
-output {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-:invalid {
-  box-shadow: initial;
-}
-
-dialog {
-  margin: initial;
-  padding: initial;
-
-  background: transparent;
-  border: initial;
-
-  &:not([open]) {
-    display: none;
+  output {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-}
 
-a, button {
-  -webkit-tap-highlight-color: transparent;
-}
+  :invalid {
+    box-shadow: initial;
+  }
 
-dl, dd {
-  margin: initial;
-}
+  dialog {
+    margin: initial;
+    padding: initial;
 
-samp {
-  display: block;
+    background: transparent;
+    border: initial;
 
-  margin: 1em 0;
-}
+    &:not([open]) {
+      display: none;
+    }
+  }
 
-label {
-  display: block;
-}
+  a, button {
+    -webkit-tap-highlight-color: transparent;
+  }
 
-img {
-  display: block;
-  max-width: 100%;
-}
+  dl, dd {
+    margin: initial;
+  }
 
-table {
-  width: 100%;
-}
+  samp {
+    display: block;
 
-th {
-  font-weight: initial;
-  text-align: initial;
-}
+    margin: 1em 0;
+  }
 
-video {
-  display: block;
-}
+  label {
+    display: block;
+  }
 
-svg {
-  display: block;
-}
+  img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+  }
 
-blockquote {
-  margin: initial;
+  table {
+    width: 100%;
+  }
+
+  th {
+    font-weight: initial;
+    text-align: initial;
+  }
+
+  video {
+    display: block;
+  }
+
+  svg {
+    display: block;
+    width: 100%; // Fix for Firefox
+    height: intrinsic; // Fix for Safari
+  }
+
+  strong {
+    font-weight: unset;
+  }
+
+  iframe, object {
+    display: block;
+    width: 100%;
+  }
+
+  iframe {
+    height: 100%;
+    border: initial;
+  }
 }

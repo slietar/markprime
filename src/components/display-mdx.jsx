@@ -178,6 +178,6 @@ export default class Display extends React.Component {
     return {
       contents: null,
       errorMessage: err.message || true
-    }
+    };
   }
 }
