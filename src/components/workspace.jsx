@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import Aside from './aside';
+import pool from '../pool';
 
 
 export default class Workspace extends React.Component {
@@ -35,13 +36,17 @@ export default class Workspace extends React.Component {
     if (fileEntry !== null) {
       this.fileController = new AbortController();
 
-      this.props.backend.watch(fileEntry.id, (contents, initial) => {
-        this.setState({
-          selectedFile: { contents, entry: fileEntry }
-        }, () => {
-          if (initial) {
-            this.refDisplay.current.setOffset(this.fileOffsets[fileEntry.id] ?? 0);
-          }
+      this.props.backend.watch(fileEntry, (file, initial) => {
+        pool.add(async () => {
+          let contents = await file.text();
+
+          this.setState({
+            selectedFile: { contents, entry: fileEntry }
+          }, () => {
+            if (initial) {
+              this.refDisplay.current.setOffset(this.fileOffsets[fileEntry.id] ?? 0);
+            }
+          });
         });
       }, { signal: this.fileController.signal });
     }

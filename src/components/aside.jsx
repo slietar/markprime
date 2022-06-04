@@ -6,14 +6,26 @@ import * as util from '../util';
 
 export default class Aside extends React.Component {
   render() {
-    let renderItem = (item) => {
+    console.info(this.props.tree);
+
+    let renderItem = (item, prefix = '') => {
       switch (item.kind) {
-        case 'directory': return (
-          <li key={item.name}>
-            <div><span>{item.name}</span></div>
-            {(item.children.length > 0) && renderItems(item.children)}
-          </li>
-        );
+        case 'directory': {
+          if (!item.hasFormattableFilesImmediate) {
+            let relevantChildren = item.children.filter((child) => (child.kind === 'directory') && child.hasFormattableFiles);
+
+            if (relevantChildren.length === 1) {
+              return renderItem(relevantChildren[0], item.name + '/');
+            }
+          }
+
+          return (
+            <li key={item.name}>
+              <div><span>{prefix + item.name}</span></div>
+              {(item.children.length > 0) && renderItems(item.children)}
+            </li>
+          );
+        }
 
         case 'file': return (
           <li className={util.formatClass({ '_active': (this.props.activeFileId === item.id) })} key={item.name}>
@@ -27,7 +39,9 @@ export default class Aside extends React.Component {
 
     let renderItems = (items) => (
       <ul>
-        {items.map((item) => renderItem(item))}
+        {items
+          .filter((item) => (item.kind === 'directory') ? item.hasFormattableFiles : item.format)
+          .map((item) => renderItem(item))}
       </ul>
     );
 
