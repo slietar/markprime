@@ -17,14 +17,16 @@ export default class App extends React.Component {
     this.fileController = null;
     this.fileOffsets = {};
     this.refDisplay = React.createRef();
-    this.store = new Store((recentFiles) => {
-      this.setState({ recentFiles });
+    this.store = new Store((workspaces) => {
+      this.setState({ workspaces });
     });
 
     this.state = {
       activeFile: null,
       recentFiles: null,
-      tree: null
+      tree: null,
+
+      workspaces: null
     };
 
     pool.add(async () => {
@@ -79,14 +81,23 @@ export default class App extends React.Component {
             </div>
           )
           : (
-            <Home recentFiles={this.state.recentFiles}
-              onSelect={(backend) => {
+            <Home
+              workspaces={this.state.workspaces}
+              createWorkspace={(backend) => {
                 pool.add(async () => {
-                  await backend.syncStore?.(this.store);
-                  let tree = await backend.loadTree();
+                  let name = await backend.findName();
+                  let workspace = {
+                    id: backend.id,
+                    lastOpened: Date.now(),
+                    name,
+                    source: await backend.saveSource(),
+                    type: backend.constructor.name
+                  };
 
-                  this.backend = backend;
-                  this.setState({ tree });
+                  await this.store.save({
+                    ...this.state.workspaces,
+                    [workspace.id]: workspace
+                  });
                 });
               }}
               onRemoveRecentFile={(infoId) => {

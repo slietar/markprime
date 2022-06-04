@@ -1,59 +1,36 @@
-import { get, set, update } from 'idb-keyval';
+import { createStore, get, set, update } from 'idb-keyval';
 
 import * as util from './util';
 
 
-const Key = 'main';
-
 export default class Store {
   constructor(onUpdate) {
+    this._key = 'workspaces';
+    this._store = createStore('markprime', 'keyval');
     this._update = onUpdate;
   }
 
   async initialize() {
-    let data = await get(Key);
+    let data = await get(this._key, this._store);
 
     if (!data || (data.version !== Version)) {
-      let data = {
-        files: [],
-        nextId: 0,
-        version: Version
+      data = {
+        version: Version,
+        workspaces: []
       };
 
-      set(Key, data);
+      await set(this._key, data, this._store);
     }
 
-    this._update(data.files);
+    this._update(data.workspaces);
   }
 
-  async add(...handles) {
-    let data = await get(Key);
-
-    for (let handle of handles) {
-      let info = await util.findAsync(data.files, async (info) => await info.handle.isSameEntry(handle));
-
-      if (!info) {
-        info = {
-          id: data.nextId++,
-          date: null,
-          handle
-        };
-
-        data.files.push(info);
-      }
-
-      info.date = Date.now();
-    }
-
-    await set(Key, data);
-  }
-
-  async remove(id) {
-    await update(Key, (data) => ({
+  async save(workspaces) {
+    await update(this._key, (data) => ({
       ...data,
-      files: data.files.filter((info) => info.id !== id)
-    }));
+      workspaces
+    }), this._store);
 
-    this._update((await get(Key)).files);
+    this._update(workspaces);
   }
 }

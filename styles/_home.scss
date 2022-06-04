@@ -14,9 +14,12 @@ $brand-color: #85144b;
     display: grid;
     align-items: center;
     column-gap: 4rem;
-    grid-template-columns: 1fr 1fr;
 
     margin: auto;
+  }
+
+  &-root--split &-center {
+    grid-template-columns: 1fr 1fr;
   }
 
   &-left {

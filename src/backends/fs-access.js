@@ -1,15 +1,78 @@
+import { findFormat } from '../formats';
 import pool from '../pool';
 import * as util from '../util';
 
 
 export default class FSAccessBackend {
-  constructor(source) {
+  static name = 'fs-access';
+
+  constructor(source, id = crypto.randomUUID()) {
+    this.id = id;
+
     this._files = null;
     this._source = source;
   }
 
-  async syncStore(store) {
-    store.add(...this._source);
+  async findLastModified() {
+    let find = async (dir) => {
+      // etc.
+    };
+
+    return await find(await this.loadTree());
+  }
+
+  async findName() {
+    let tree = await this.loadTree();
+    let readmeEntry = tree.children.find((child) => (child.kind === 'file') && (child.name.toLowerCase() === 'readme.md'));
+
+    if (readmeEntry?.format) {
+      let file = await this._files[readmeEntry.id].handle.getFile();
+      let contents = await file.text();
+
+      let name = await readmeEntry.format.findName?.(contents);
+
+      if (name) {
+        return name;
+      }
+    }
+
+    if (this._source.type === 'single') {
+      return this._source.handle.name;
+    }
+
+    let rootEntries = tree.children.filter((child) => (child.kind === 'file'));
+    let rootEntriesFormattable = rootEntries.filter((child) => child.format);
+
+    for (let child of rootEntriesFormattable) {
+      let file = await this._files[child.id].handle.getFile();
+      let contents = await file.text();
+
+      let name = await child.format.findName?.(contents);
+
+      if (name) {
+        let otherFilesCount = rootEntriesFormattable.length - 1;
+
+        if (otherFilesCount > 0) {
+          name += ` (+ ${otherFilesCount} file${(otherFilesCount > 1) ? 's' : ''})`;
+        }
+
+        return name;
+      }
+    }
+
+    if (rootEntries.length === 1) {
+      return rootEntries[0].name;
+    }
+
+    // TODO
+    // Add `${rootEntriesFormattable[0].name} (+ n files)`
+    // Add `${rootEntries[0].name} (+ n files)`
+
+    return null;
+  }
+
+  async saveSource() {
+    return this._source;
   }
 
   async loadTree() {
@@ -20,7 +83,7 @@ export default class FSAccessBackend {
       switch (handle.kind) {
         case 'directory': {
           return {
-            kind: 'dir',
+            kind: 'directory',
             name: handle.name,
             children: (
               await util.collectAsync(
@@ -39,19 +102,20 @@ export default class FSAccessBackend {
           return {
             kind: 'file',
             id,
+            format: findFormat(handle.name),
             name: handle.name
           };
         }
       }
     };
 
-    return (this._source.length > 1) || (this._source[0] instanceof FileSystemFileHandle)
+    return (this._source.type === 'multiple')
       ? {
-        kind: 'dir',
+        kind: 'directory',
         name: null,
-        children: await Promise.all(this._source.map((handle) => processHandle(handle)))
+        children: await Promise.all(this._source.handles.map((handle) => processHandle(handle)))
       }
-      : await processHandle(this._source[0]);
+      : await processHandle(this._source.handle);
   }
 
   async get(fileId) {
@@ -96,5 +160,26 @@ export default class FSAccessBackend {
     });
 
     update(true);
+  }
+
+
+  static fromDirectoryHandle(handle) {
+    return new FSAccessBackend({
+      type: 'single',
+      handle
+    });
+  }
+
+  static fromHandles(handles) {
+    return new FSAccessBackend({
+      type: 'multiple',
+      handles
+    });
+  }
+
+  static getWorkspaceIcon(source) {
+    return source.type === 'multiple'
+      ? 'file'
+      : 'directory';
   }
 }

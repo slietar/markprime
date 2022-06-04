@@ -1,10 +1,12 @@
 import * as React from 'react';
 
 import Icon from './icon';
+import Backends from '../backends';
 import FilesBackend from '../backends/files';
 import FSAccessBackend from '../backends/fs-access';
 import pool from '../pool';
 import * as util from '../util';
+import { formatRelativeTime } from '../format';
 
 
 export default class Home extends React.Component {
@@ -25,8 +27,17 @@ export default class Home extends React.Component {
   }
 
   render() {
+    let workspaces = this.props.workspaces && Object.values(this.props.workspaces);
+
+    if (!workspaces) {
+      return (
+        <div />
+      );
+    }
+
     return (
-      <div className="home-root home-root--split"
+      <div
+        className={util.formatClass('home-root', { 'home-root--split': (workspaces.length > 0) })}
         onDragEnter={(event) => {
           if ((event.target === event.currentTarget) && !event.currentTarget.contains(event.relatedTarget)) {
             console.log('drag enter', event.dataTransfer.files[0]);
@@ -74,8 +85,8 @@ export default class Home extends React.Component {
                       }));
 
                       if (handles) {
-                        let backend = new FSAccessBackend(handles);
-                        this.props.onSelect(backend);
+                        let backend = FSAccessBackend.fromHandles(handles);
+                        this.props.createWorkspace(backend);
                       }
                     });
                   } else {
@@ -97,8 +108,8 @@ export default class Home extends React.Component {
                       let handle = await util.wrapAbortable(window.showDirectoryPicker());
 
                       if (handle) {
-                        let backend = new FSAccessBackend([handle]);
-                        this.props.onSelect(backend);
+                        let backend = FSAccessBackend.fromDirectoryHandle(handle);
+                        this.props.createWorkspace(backend);
                       }
                     })
                   }}>Select directory</button>
@@ -111,9 +122,9 @@ export default class Home extends React.Component {
             </div>
           </div>
 
-          {(this.props.recentFiles?.length > 0) && (
+          {(workspaces.length > 0) && (
             <div className="home-right recent-root">
-              <input type="text" placeholder="Search for files" className="recent-input" />
+              {/* <input type="text" placeholder="Search for files" className="recent-input" />
               <div className="recent-filters">
                 <button type="button" className="recent-filter">
                   <Icon name="directory" />
@@ -123,72 +134,23 @@ export default class Home extends React.Component {
                   <Icon name="github" />
                   <div>GitHub gists</div>
                 </button>
-              </div>
+              </div> */}
               <div className="recent-list">
-                <div className="recent-entry-root">
-                  <button type="button" className="recent-entry-button">
-                    <Icon name="github" className="recent-entry-icon" />
-                    <div className="recent-entry-title">Some gist</div>
-                    <div className="recent-entry-subtitle">2 days ago</div>
-                  </button>
-                  <div className="recent-entry-actions">
-                    <button type="button" className="recent-entry-remove">
-                      <Icon name="close" />
+                {workspaces.map((workspace) => (
+                  <div className="recent-entry-root">
+                    <button type="button" className="recent-entry-button">
+                      <Icon name={Backends[workspace.type].getWorkspaceIcon(workspace.source)} className="recent-entry-icon" />
+                      <div className="recent-entry-title">{workspace.name ?? 'Untitled workspace'}</div>
+                      <div className="recent-entry-subtitle">Last opened {formatRelativeTime(workspace.lastOpened)}</div>
                     </button>
-                  </div>
-                </div>
-                <div className="recent-entry-root">
-                  <button type="button" className="recent-entry-button">
-                    <Icon name="directory" className="recent-entry-icon" />
-                    <div className="recent-entry-title">Very very very very very very very very very very very very very long</div>
-                    <div className="recent-entry-subtitle">2 days ago</div>
-                  </button>
-                  <div className="recent-entry-actions">
-                    <button type="button" className="recent-entry-remove">
-                      <Icon name="close" />
-                    </button>
-                  </div>
-                </div>
-                <div className="recent-entry-root">
-                  <button type="button" className="recent-entry-button">
-                    <Icon name="file" className="recent-entry-icon" />
-                    <div className="recent-entry-title">readme.md (+ 2 files)</div>
-                    <div className="recent-entry-subtitle">2 days ago</div>
-                  </button>
-                  <div className="recent-entry-actions">
-                    <button type="button" className="recent-entry-remove">
-                      <Icon name="close" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* <ul className="recent-list">
-                {this.props.recentFiles
-                  .sort((a, b) => b.date - a.date)
-                  .map((info) => (
-                    <li className="recent-entry" key={info.id}>
-                      <button className="recent-name" onClick={() => {
-                        pool.add(async () => {
-                          let status = await info.handle.requestPermission();
-                          if (status === 'granted') {
-                            let backend = new FSAccessBackend([info.handle]);
-                            this.props.onSelect(backend);
-                          }
-                        });
-                      }}>
-                        <Icon name={info.handle.kind} />
-                        <span>{info.handle.name}</span>
-                      </button>
-                      <button className="recent-remove" onClick={() => {
-                        this.props.onRemoveRecentFile(info.id);
-                      }}>
+                    <div className="recent-entry-actions">
+                      <button type="button" className="recent-entry-remove">
                         <Icon name="close" />
                       </button>
-                    </li>
-                  ))
-                }
-              </ul> */}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
