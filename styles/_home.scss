@@ -1,3 +1,6 @@
+@use "./mixins" as *;
+
+
 $brand-color: #85144b;
 
 
@@ -9,16 +12,27 @@ $brand-color: #85144b;
 
   &-center {
     display: grid;
+    align-items: center;
+    column-gap: 4rem;
+    grid-template-columns: 1fr 1fr;
+
+    margin: auto;
+  }
+
+  &-left {
+    display: grid;
     grid-template-rows: 1fr auto 1fr;
     justify-items: center;
     row-gap: 1rem;
-
-    margin: auto;
 
     p {
       font-size: 1.4rem;
       font-weight: 600;
     }
+  }
+
+  &-root--split &-left {
+    justify-items: start;
   }
 
   &-content {
@@ -28,17 +42,30 @@ $brand-color: #85144b;
     row-gap: 0.8rem;
   }
 
+  &-root--split &-content {
+    align-items: stretch;
+    width: 100%;
+  }
+
 
   &-buttons {
     display: flex;
     column-gap: 0.6rem;
   }
 
+  &-root--split &-buttons {
+    display: grid;
+    gap: 0.4rem;
+    grid-template-columns: 1fr 1fr;
+  }
+
   &-button {
+    --background: #0074d9;
+
     width: auto;
     padding: 0.6rem 1.4rem;
 
-    background-color: #0074d9;
+    background-color: var(--background);
     background-image: linear-gradient(-45deg, #0002, #0000);
     border-radius: 5px;
 
@@ -48,19 +75,33 @@ $brand-color: #85144b;
     transition: box-shadow 150ms;
 
     &:hover {
-      box-shadow: 2px 2px 3px #0002;
+      box-shadow: 2px 2px 6px #0002;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--background);
+      outline-offset: 1px;
     }
 
     &--github {
+      --background: #000;
+
       display: flex;
       align-items: center;
       column-gap: 0.6rem;
 
-      background-color: #000;
-
       svg {
         width: 18px;
       }
+    }
+  }
+
+  &-root--split &-button {
+    justify-content: center;
+    text-align: center;
+
+    &--github {
+      grid-column: 1 / -1;
     }
   }
 
@@ -100,74 +141,121 @@ $brand-color: #85144b;
     margin-top: 1rem;
   }
 
-  &-header {
-    display: flex;
-    align-items: center;
-    column-gap: 1rem;
-    margin-bottom: 0.4rem;
+  &-input {
+    padding: 0.4rem 1.2rem;
 
-    &::before, &::after {
-      content: "";
-      height: 2px;
+    background-color: #fafafa;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 
-      background-color: #999;
+    &:hover {
+      border-color: #bbb;
+      box-shadow: inset 3px 3px 3px #00000008;
     }
 
-    &::before {
-      width: 1.6rem;
-    }
-
-    &::after {
-      flex-grow: 1;
+    &::placeholder {
+      color: #ccc;
     }
   }
 
-  &-title {
-    width: max-content;
+  &-filters {
+    display: flex;
+    column-gap: 0.4rem;
 
-    color: #666;
-    font-size: 1.2rem;
-    font-weight: 600;
+    margin: 0.4rem 0;
+  }
+
+  &-filter {
+    display: flex;
+    align-items: center;
+    column-gap: 0.4rem;
+    width: auto;
+
+    padding: 0.2rem 0.4rem;
+
+    background-color: #fafafa;
+    border-radius: 4px;
+
+    color: #999;
+
+    &:hover {
+      background-color: #eee;
+      color: #000;
+    }
+
+    &._selected {
+      background-color: #333;
+      color: #fff;
+    }
   }
 
   &-list {
     display: flex;
     flex-direction: column;
-    row-gap: 0.2rem;
+
+    max-height: 300px;
+    margin: 1rem 0;
+
+    overflow-y: auto;
   }
 
   &-entry {
-    display: grid;
-    align-items: center;
-    grid-template: auto / 1fr auto;
-  }
+    &-root {
+      display: grid;
+      grid-template-columns: 1fr auto;
 
-  &-name {
-    display: flex;
-    align-items: center;
-    column-gap: 0.6rem;
-
-    padding: 0.1rem 0.4rem;
-    border-radius: 4px;
-
-    transition: color 150ms;
-
-    &:not(:hover) {
-      color: #555;
+      &:not(:last-child) {
+        border-bottom: 1px solid #ddd;
+      }
     }
-  }
 
-  &-remove {
-    padding: 0.2rem;
+    &-button {
+      display: grid;
+      gap: 0 0.8rem;
+      grid-template: auto auto / auto 1fr;
 
-    border-radius: 4px;
+      padding: 0.8rem 1.2rem 0.8rem 1rem;
 
-    color: #ccc;
-    transition: background-color 150ms, color 150ms;
+      &:hover {
+        &, + * {
+          background-color: #fafafa;
+        }
+      }
+    }
 
-    &:hover {
-      background-color: #eee;
+    &-icon {
+      // grid-row: 1 / -1;
+      align-self: end;
+    }
+
+    &-title {
+      @include text-ellipsis();
+      font-weight: 500;
+    }
+
+    &-subtitle {
       color: #999;
+      grid-column: 2;
+    }
+
+
+    &-actions {
+      display: flex;
+      align-items: center;
+
+      padding-right: 1rem;
+    }
+
+    &-remove {
+      padding: 0.2rem;
+      border-radius: 4px;
+
+      color: #ccc;
+
+      &:hover {
+        background-color: #eee;
+        color: #999;
+      }
     }
   }
 }
