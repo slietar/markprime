@@ -57,7 +57,10 @@ export default class Workspace extends React.Component {
 
     if (this.state.selectedFile) {
       let Renderer = this.state.selectedFile.entry.format;
-      contents = <Renderer contents={this.state.selectedFile.contents} ref={this.refDisplay} />;
+      contents = <Renderer
+        contents={this.state.selectedFile.contents}
+        entry={this.state.selectedFile.entry}
+        ref={this.refDisplay} />;
     }
 
     return (

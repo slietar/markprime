@@ -96,18 +96,23 @@ export default class FSAccessBackend {
             util.mapAsync(handle.values(), processHandle)
           )).filter((child) => child !== null);
 
+          let hasFormattableFiles = children.some((entry) => (entry.kind === 'directory') ? entry.hasFormattableFiles : entry.format);
+          let childrenWithFormattableFiles = children.filter((entry) => (entry.kind === 'directory') && entry.hasFormattableFiles);
+
           let entry = {
             kind: 'directory',
             id,
             name: handle.name,
             children,
-            hasFormattableFiles: children.some((entry) => (entry.kind === 'directory') ? entry.hasFormattableFiles : entry.format),
-            hasFormattableFilesImmediate: children.some((entry) => (entry.kind === 'file') && entry.format),
+            blendChild: hasFormattableFiles && (childrenWithFormattableFiles.length === 1)
+              ? childrenWithFormattableFiles[0]
+              : null,
+            hasFormattableFiles,
             parent: null
           };
 
           for (let child of children) {
-            child.parent = new WeakRef(entry);
+            child.parent = entry;
           }
 
           return entry;
@@ -120,6 +125,7 @@ export default class FSAccessBackend {
             format: findFormat(handle.name),
             name: handle.name,
             parent: null,
+            getBlob: async () => await handle.getFile(),
             _handle: handle
           };
         }

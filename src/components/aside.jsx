@@ -6,26 +6,16 @@ import * as util from '../util';
 
 export default class Aside extends React.Component {
   render() {
-    console.info(this.props.tree);
-
     let renderItem = (item, prefix = '') => {
       switch (item.kind) {
-        case 'directory': {
-          if (!item.hasFormattableFilesImmediate) {
-            let relevantChildren = item.children.filter((child) => (child.kind === 'directory') && child.hasFormattableFiles);
-
-            if (relevantChildren.length === 1) {
-              return renderItem(relevantChildren[0], item.name + '/');
-            }
-          }
-
-          return (
+        case 'directory': return item.blendChild
+          ? renderItem(item.blendChild, item.name + '/')
+          : (
             <li key={item.name}>
               <div><span>{prefix + item.name}</span></div>
               {(item.children.length > 0) && renderItems(item.children)}
             </li>
           );
-        }
 
         case 'file': return (
           <li className={util.formatClass({ '_active': (this.props.activeFileId === item.id) })} key={item.name}>
