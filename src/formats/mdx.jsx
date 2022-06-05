@@ -2,6 +2,7 @@ import * as esbuild from 'esbuild-wasm';
 import * as mdx from '@mdx-js/mdx';
 import * as React from 'react';
 import * as ReactRuntime from 'react/jsx-runtime';
+import * as ReactDOM from 'react-dom';
 
 import { findEntryFromRelativePath } from '../filesystem';
 import pool from '../pool';
@@ -14,6 +15,7 @@ let esbuildInit = null;
 
 
 export default class MDXRenderer extends React.Component {
+  refMain = React.createRef();
   refRoot = React.createRef();
 
   constructor(props) {
@@ -37,16 +39,24 @@ export default class MDXRenderer extends React.Component {
     this.bundle();
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate(prevProps, prevState, _snapshot) {
     if (this.props !== prevProps) {
       this.bundle();
+    }
+
+    if ((this.state.document !== prevState.document) && this.state.document) {
+      ReactDOM.render(this.state.document.contents, this.refMain.current);
+
+      this.refMain.current.adoptedStyleSheets = this.state.document.styleSheet
+        ? [this.state.document.styleSheet]
+        : [];
     }
   }
 
   bundle() {
-    if (this.state.contents || this.state.errorMessage) {
+    if (this.state.document || this.state.errorMessage) {
       this.setState({
-        contents: null,
+        document: null,
         errorMessage: null
       });
     }
@@ -167,14 +177,29 @@ export default class MDXRenderer extends React.Component {
         ]
       });
 
+
       let decoder = new TextDecoder();
       let outputFile = result.outputFiles.find((outputFile) => outputFile.path === '/entry.js');
       let outputText = decoder.decode(outputFile.contents);
 
+      // TODO: avoid URL leak
       let outputUrl = URL.createObjectURL(new Blob([outputText], { type: 'text/javascript' }));
       let { default: contentsProducer } = await import(outputUrl);
 
-      this.setState({ contents: contentsProducer() });
+      let styleSheet = null;
+      let cssFile = result.outputFiles.find((outputFile) => outputFile.path === '/entry.css');
+
+      if (cssFile) {
+        styleSheet = new CSSStyleSheet();
+        await styleSheet.replace(decoder.decode(cssFile.contents));
+      }
+
+      this.setState({
+        document: {
+          contents: contentsProducer(),
+          styleSheet
+        }
+      });
     }).catch((err) => {
       this.setState({ errorMessage: err.message || true });
     });
@@ -191,9 +216,13 @@ export default class MDXRenderer extends React.Component {
   render() {
     return (
       <div className="display-root" ref={this.refRoot}>
-        {this.state.contents
+        {this.state.document
           ? (
-            <main>{this.state.contents}</main>
+            <main ref={(ref) => {
+              let shadow = ref?.shadowRoot ?? ref?.attachShadow({ mode: 'open' });
+              this.refMain.current = shadow;
+            }}>
+            {this.state.document.contents}</main>
           )
           : (
             this.state.errorMessage
