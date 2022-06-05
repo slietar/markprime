@@ -1,8 +1,9 @@
 import * as esbuild from 'esbuild-wasm';
-import * as mdx from '@mdx-js/mdx'
+import * as mdx from '@mdx-js/mdx';
 import * as React from 'react';
 import * as ReactRuntime from 'react/jsx-runtime';
 
+import { findEntryFromRelativePath } from '../filesystem';
 import pool from '../pool';
 
 
@@ -12,11 +13,11 @@ window.ReactRuntime = ReactRuntime;
 let esbuildInit = null;
 
 
-export default class Display extends React.Component {
-  constructor() {
-    super();
+export default class MDXRenderer extends React.Component {
+  refRoot = React.createRef();
 
-    this.refRoot = React.createRef();
+  constructor(props) {
+    super(props);
 
     this.state = {
       contents: null,
@@ -53,11 +54,6 @@ export default class Display extends React.Component {
     pool.add(async () => {
       await esbuildInit;
 
-      let contents = this.props.file.contents;
-      let compiled = await mdx.compile(contents);
-
-      let input = compiled.value;
-      let name = 'index.js';
       let cache = {};
 
       let resolveUrl = async (path, importer = null) => {
@@ -65,7 +61,6 @@ export default class Display extends React.Component {
         let res = await fetch(url);
 
         cache[res.url] = await res.text();
-
         return res.url;
       };
 
@@ -78,13 +73,21 @@ export default class Display extends React.Component {
         entryPoints: ['entry'],
         bundle: true,
         format: 'esm',
+        loader: {
+          '.css': 'file'
+        },
+        outdir: '.',
 
         plugins: [
           {
             name: 'loadsx',
-            setup(build) {
+            setup: (build) => {
               build.onResolve({ filter: /^entry$/ }, (args) => {
-                return { path: '/' + name };
+                return {
+                  path: this.props.entry.path,
+                  namespace: 'local',
+                  pluginData: { entry: this.props.entry }
+                };
               });
 
               build.onResolve({ filter: /^react(?:\/jsx-runtime)?$/ }, (args) => {
@@ -116,15 +119,42 @@ export default class Display extends React.Component {
               });
 
               build.onResolve({ filter: /\..+$/ }, (args) => {
-                return { path: '/' + name.substring(1) };
+                return {
+                  path: args.path,
+                  namespace: 'local',
+                  pluginData: { entry: findEntryFromRelativePath(args.pluginData.entry.parent, args.path) }
+                };
               });
 
               build.onLoad({ filter: /.*/, namespace: 'known' }, async (args) => {
                 return { contents: `module.exports = window.${known[args.path]}` };
               });
 
-              build.onLoad({ filter: new RegExp(`^/${name}$`) }, async (args) => {
-                return { contents: input, loader: 'jsx' };
+              build.onLoad({ filter: /.*\.mdx?$/, namespace: 'local' }, async (args) => {
+                let { entry } = args.pluginData;
+                let text = await (await entry.getBlob()).text();
+                let compiled = await mdx.compile(text);
+
+                return {
+                  contents: compiled.value,
+                  loader: 'jsx',
+                  pluginData: { entry }
+                };
+              });
+
+              build.onLoad({ filter: /.*$/, namespace: 'local' }, async (args) => {
+                let { entry } = args.pluginData;
+                let text = await (await entry.getBlob()).text();
+
+                return {
+                  contents: text,
+                  loader: 'jsx',
+                  pluginData: { entry }
+                };
+              });
+
+              build.onLoad({ filter: /.*\.css/, namespace: 'http-url' }, async (args) => {
+                return { contents: cache[args.path], loader: 'css' };
               });
 
               build.onLoad({ filter: /.*/, namespace: 'http-url' }, async (args) => {
@@ -138,7 +168,8 @@ export default class Display extends React.Component {
       });
 
       let decoder = new TextDecoder();
-      let outputText = decoder.decode(result.outputFiles[0].contents);
+      let outputFile = result.outputFiles.find((outputFile) => outputFile.path === '/entry.js');
+      let outputText = decoder.decode(outputFile.contents);
 
       let outputUrl = URL.createObjectURL(new Blob([outputText], { type: 'text/javascript' }));
       let { default: contentsProducer } = await import(outputUrl);

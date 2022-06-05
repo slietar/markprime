@@ -1,8 +1,10 @@
 import MarkdownFormat from './markdown';
+import MDXFormat from './mdx';
 
 
 export const Formats = Object.fromEntries([
-  MarkdownFormat
+  MarkdownFormat,
+  MDXFormat
 ].map((Format) => [Format.name, Format]));
 
 
@@ -17,6 +19,7 @@ export function findFormat(filename) {
 
   switch (extension) {
     case 'md': return MarkdownFormat;
+    case 'mdx': return MDXFormat;
   }
 
   return null;
