@@ -92,9 +92,11 @@ export default class FSAccessBackend {
             await handle.requestPermission();
           }
 
-          let children = (await util.collectAsync(
-            util.mapAsync(handle.values(), processHandle)
-          )).filter((child) => child !== null);
+          let childrenResults = (await util.collectAsync(
+            util.mapAsync(handle.values(), (h) => processHandle(h, depth + 1))
+          ));
+
+          let children = childrenResults.filter((child) => child !== null);
 
           let hasFormattableFiles = children.some((entry) => (entry.kind === 'directory') ? entry.hasFormattableFiles : entry.format);
           let childrenWithFormattableFiles = children.filter((entry) => (entry.kind === 'directory') && entry.hasFormattableFiles);
@@ -108,7 +110,8 @@ export default class FSAccessBackend {
               ? childrenWithFormattableFiles[0]
               : null,
             hasFormattableFiles,
-            parent: null
+            parent: null,
+            truncated: (children.length !== childrenResults.length)
           };
 
           for (let child of children) {
@@ -136,9 +139,9 @@ export default class FSAccessBackend {
       ? {
         kind: 'directory',
         name: null,
-        children: await Promise.all(this._source.handles.map((handle) => processHandle(handle)))
+        children: await Promise.all(this._source.handles.map((handle) => processHandle(handle, 1)))
       }
-      : await processHandle(this._source.handle);
+      : await processHandle(this._source.handle, 0);
 
     this.tree = tree;
     return tree;

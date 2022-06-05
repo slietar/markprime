@@ -13,6 +13,11 @@ export function formatClass(...args) {
 }
 
 
+export function isExternalUrl(url) {
+  return (/^https?:\/\/|blob:|data:/i).test(url);
+}
+
+
 export async function wrapAbortable(promise) {
   try {
     return await promise;
