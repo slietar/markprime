@@ -6,5 +6,5 @@ const rtf = new Intl.RelativeTimeFormat('en', {
 
 
 export function formatRelativeTime(time) {
-  return rtf.format(Math.round((Date.now() - time) / 3600e3 / 24), 'day');
+  return rtf.format(Math.round((time - Date.now()) / 3600e3 / 24), 'day');
 }

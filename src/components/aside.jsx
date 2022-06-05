@@ -8,8 +8,8 @@ export default class Aside extends React.Component {
   render() {
     let renderItem = (item, prefix = '') => {
       switch (item.kind) {
-        case 'directory': return item.blendChild
-          ? renderItem(item.blendChild, prefix + item.name + '/')
+        case 'directory': return item.collapseChild
+          ? renderItem(item.collapseChild, prefix + item.name + '/')
           : (
             <li key={item.name}>
               <div><span>{prefix + item.name}</span></div>
