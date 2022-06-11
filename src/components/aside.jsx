@@ -18,10 +18,8 @@ export default class Aside extends React.Component {
           );
 
         case 'file': return (
-          <li className={util.formatClass({ '_active': (this.props.activeFileId === item.id) })} key={item.name}>
-            <button type="button" onClick={() => {
-              this.props.onSelect(item);
-            }}>{item.name}</button>
+          <li className={util.formatClass({ '_active': (this.props.currentEntryPath === item.path) })} key={item.name}>
+            <a href={this.props.workspacePathname + item.path}>{item.name}</a>
           </li>
         );
       }
@@ -38,13 +36,19 @@ export default class Aside extends React.Component {
     return (
       <aside className="aside-root">
         <div className="aside-header">
-          <button className="aside-back" onClick={() => {
-            this.props.onClose();
+          <a href="/" className="aside-back" onClick={(event) => {
+            let entries = navigation.entries();
+            let entry = entries.findLast((entry) => entry.url === new URL('/', location.origin).href);
+
+            if (entry) {
+              event.preventDefault();
+              navigation.traverseTo(entry.key);
+            }
           }}>
             <Icon name="arrow-back" />
             <span>Home</span>
-          </button>
-          <div className="aside-title">{this.props.name ?? 'Untitled workspace'}</div>
+          </a>
+          <a href={this.props.workspacePathname + '/'} className="aside-title">{this.props.name ?? 'Untitled workspace'}</a>
         </div>
         <div className="aside-tree">
           {renderItems(this.props.tree.children)}

@@ -18,6 +18,8 @@ export default class MDXRenderer extends React.Component {
   refMain = React.createRef();
   refRoot = React.createRef();
 
+  unmounted = false;
+
   constructor(props) {
     super(props);
 
@@ -30,7 +32,7 @@ export default class MDXRenderer extends React.Component {
   componentDidMount() {
     if (!esbuildInit) {
       esbuildInit = esbuild.initialize({
-        wasmURL: 'esbuild.wasm',
+        wasmURL: '/esbuild.wasm',
       });
 
       pool.add(() => esbuildInit);
@@ -51,6 +53,10 @@ export default class MDXRenderer extends React.Component {
         ? [this.state.document.styleSheet]
         : [];
     }
+  }
+
+  componentWillUnmount() {
+    this.unmounted = true;
   }
 
   bundle() {
@@ -177,6 +183,9 @@ export default class MDXRenderer extends React.Component {
         ]
       });
 
+      if (this.unmounted) {
+        return;
+      }
 
       let decoder = new TextDecoder();
       let outputFile = result.outputFiles.find((outputFile) => outputFile.path === '/entry.js');
@@ -194,14 +203,19 @@ export default class MDXRenderer extends React.Component {
         await styleSheet.replace(decoder.decode(cssFile.contents));
       }
 
-      this.setState({
-        document: {
-          contents: contentsProducer(),
-          styleSheet
-        }
-      });
+      if (!this.unmounted) {
+        this.setState({
+          document: {
+            contents: contentsProducer(),
+            styleSheet
+          }
+        });
+      }
     }).catch((err) => {
-      this.setState({ errorMessage: err.message || true });
+      window.err = err;
+      if (!this.unmounted) {
+        this.setState({ errorMessage: err.message || true });
+      }
     });
   }
 

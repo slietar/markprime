@@ -137,14 +137,12 @@ export default class Home extends React.Component {
               </div> */}
               <div className="recent-list">
                 {workspaces.map((workspace) => (
-                  <div className="recent-entry-root">
-                    <button type="button" className="recent-entry-button" onClick={() => {
-                      this.props.openWorkspace(workspace.id);
-                    }}>
+                  <div className="recent-entry-root" key={workspace.id}>
+                    <a href={`/workspace/${workspace.id}/`} className="recent-entry-button">
                       <Icon name={Backends[workspace.type].getWorkspaceIcon(workspace.source)} className="recent-entry-icon" />
                       <div className="recent-entry-title">{workspace.name ?? 'Untitled workspace'}</div>
                       <div className="recent-entry-subtitle">Last opened {formatRelativeTime(workspace.lastOpened)}</div>
-                    </button>
+                    </a>
                     <div className="recent-entry-actions">
                       <button type="button" className="recent-entry-remove" onClick={() => {
                         this.props.removeWorkspace(workspace.id);

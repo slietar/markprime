@@ -3,3 +3,34 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+
+%spinner-right {
+  padding-right: 2.8em;
+  position: relative;
+
+  &::after {
+    content: '';
+
+    display: inline-block;
+    width: 1.1em;
+    height: 1.1em;
+
+    position: absolute;
+    right: 1em;
+    top: calc(50% - 0.5em);
+
+
+    border: 0.2em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+
+    animation: spinner-border 750ms linear infinite;
+  }
+}
+
+@keyframes spinner-border {
+  100% {
+    transform: rotate(360deg);
+  }
+}

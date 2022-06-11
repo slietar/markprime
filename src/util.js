@@ -1,3 +1,14 @@
+export function defer() {
+  let resolve, reject;
+  let promise = new Promise((_resolve, _reject) => {
+    resolve = _resolve;
+    reject = _reject;
+  });
+
+  return { promise, resolve, reject };
+}
+
+
 export function formatClass(...args) {
   return args
     .flatMap((arg) => {

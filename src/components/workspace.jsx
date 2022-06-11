@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import Aside from './aside';
 import pool from '../pool';
+import { findEntryFromRelativePath } from '../filesystem';
 
 
 export default class Workspace extends React.Component {
@@ -17,13 +18,41 @@ export default class Workspace extends React.Component {
     };
   }
 
+  get rootPathname() {
+    return `/workspace/${this.props.workspace.id}/`;
+  }
+
+  handlePath() {
+    if (this.props.path !== '/') {
+      let entry = findEntryFromRelativePath(this.props.backend.tree, '.' + this.props.path);
+
+      if (entry) {
+        this.selectFile(entry, this.props.onDone);
+      } else {
+        navigation.navigate(this.rootPathname, { history: 'replace' });
+      }
+    } else {
+      this.selectFile(null, this.props.onDone);
+    }
+  }
+
+  componentDidMount() {
+    this.handlePath();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props !== prevProps) {
+      this.handlePath();
+    }
+  }
+
   componentWillUnmount() {
     if (this.fileController) {
       this.fileController.abort();
     }
   }
 
-  selectFile(fileEntry) {
+  selectFile(fileEntry, callback) {
     if (this.fileController) {
       this.fileController.abort();
       this.fileController = null;
@@ -45,10 +74,14 @@ export default class Workspace extends React.Component {
           }, () => {
             if (initial) {
               this.refDisplay.current.setOffset(this.fileOffsets[fileEntry.id] ?? 0);
+              callback();
             }
           });
         });
       }, { signal: this.fileController.signal });
+    } else {
+      this.setState({ selectedFile: null });
+      callback();
     }
   }
 
@@ -57,6 +90,7 @@ export default class Workspace extends React.Component {
 
     if (this.state.selectedFile) {
       let Renderer = this.state.selectedFile.entry.format;
+
       contents = <Renderer
         contents={this.state.selectedFile.contents}
         entry={this.state.selectedFile.entry}
@@ -66,13 +100,10 @@ export default class Workspace extends React.Component {
     return (
       <div className="window-root">
         <Aside
-          activeFileId={this.state.selectedFile?.entry.id}
+          currentEntryPath={this.props.path}
           name={this.props.workspace.name}
           tree={this.props.backend.tree}
-          onClose={this.props.onClose}
-          onSelect={(fileEntry) => {
-            this.selectFile(fileEntry);
-          }} />
+          workspacePathname={this.rootPathname.slice(0, -1)} />
         {contents}
       </div>
     );

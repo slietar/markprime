@@ -77,7 +77,7 @@
       padding-left: 1.2rem;
     }
 
-    li._active button {
+    li._active a {
       background-color: #0001;
     }
 
@@ -87,7 +87,7 @@
       overflow-y: hidden;
       text-overflow: ellipsis;
 
-      &:not(button) {
+      &:not(a) {
         display: flex;
         align-items: center;
         column-gap: 0.6rem;
@@ -112,7 +112,7 @@
       }
     }
 
-    button {
+    a {
       max-width: max-content;
       border-radius: 4px;
 

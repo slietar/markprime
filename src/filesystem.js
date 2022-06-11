@@ -12,9 +12,9 @@ export function findEntryFromRelativePath(startEntry, path) {
       entry = entry.parent;
     } else if (entry.kind === 'directory') {
       entry = entry.children.find((child) => (child.name === segment))
-        || entry.children.find((child) => (child.name.toLowerCase() === segment.toLowerCase()))
+        || entry.children.find((child) => (child.name.toLowerCase() === segment.toLowerCase()));
     }
   }
 
-  return entry;
+  return entry ?? null;
 }

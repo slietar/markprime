@@ -1,0 +1,18 @@
+@use "./mixins";
+
+
+.loader {
+  &-outer {
+    display: flex;
+    height: 100%;
+  }
+
+  &-inner {
+    @extend %spinner-right;
+
+    margin: auto;
+
+    color: #666;
+    font-weight: 500;
+  }
+}
