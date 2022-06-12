@@ -36,59 +36,54 @@ $font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation M
   max-width: 800px;
 
   margin: 0 auto;
+
+  font-size: 16px;
   line-height: 1.6;
 
+  h1, h2, h3, h4, h5, h6 {
+    margin: 1em 0 0.6em 0;
+  }
+
   h1 {
-    margin: 2rem 0;
-    font-size: 2.8rem;
+    font-size: 2.8em;
   }
 
   h2 {
-    display: flex;
-    position: relative;
-    left: -3rem;
-
-    margin: 2rem 0 1.4rem 0;
-
-    // border-bottom: 2px solid #ccc;
-    font-size: 2rem;
-
-    &::before {
-      display: block;
-      content: "✵";
-
-      width: 3rem;
-    }
+    font-size: 2em;
   }
 
   h3 {
-    margin: 1.4rem 0 1rem 0;
-    font-size: 1.6rem;
-
-    // &::after {
-    //   display: block;
-    //   content: "";
-    //   background-color: red;
-    //   width: 100%;
-    //   height: 1px;
-    // }
+    font-size: 1.6em;
   }
 
   h4 {
-    margin: 1rem 0 0.6rem;
-
     color: #666;
-    font-size: 1.2rem;
+    font-size: 1.2em;
+  }
+
+  h5 {
+    color: #666;
+    font-size: 1.1em;
+  }
+
+  h6 {
+    color: #999;
+    font-size: 1.1em;
+  }
+
+  hr {
+    margin: 1em 0;
+    border-bottom: 2px solid #ddd;
   }
 
 
   p {
-    margin: 1rem 0;
+    margin: 1em 0;
     text-align: justify;
   }
 
   li p {
-    margin: 0.6rem 0;
+    margin: 0.6em 0;
   }
 
   a {
@@ -105,8 +100,8 @@ $font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation M
   }
 
   blockquote {
-    margin: 1rem 0;
-    padding: 0.6rem 0 0.6rem 1rem;
+    margin: 1em 0;
+    padding: 0.6em 0 0.6em 1em;
 
     border-left: 4px solid #ddd;
 
@@ -121,8 +116,12 @@ $font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation M
 
 
   ol, ul {
-    margin: 1rem 0;
-    padding-left: 2rem;
+    margin: 1em 0;
+    padding-left: 2em;
+
+    ol, ul {
+      margin: 0.4em 0;
+    }
   }
 
   li {
@@ -138,13 +137,13 @@ $font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation M
   }
 
   li + li {
-    margin-top: 0.4rem;
+    margin-top: 0.2em;
   }
 
 
   pre {
-    margin: 1rem 0;
-    padding: 1rem 1.6rem;
+    margin: 1em 0;
+    padding: 1em 1.6em;
 
     background-color: #eee;
     border-radius: 4px;
@@ -170,10 +169,10 @@ $font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation M
       content: attr(data-language);
 
       position: absolute;
-      right: 4rem;
+      right: 4em;
       top: 0;
 
-      padding: 0 0.6rem;
+      padding: 0 0.6em;
 
       background-color: #ccc;
       border-radius: 0 0 2px 2px;
@@ -182,7 +181,7 @@ $font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation M
 
 
   table {
-    margin: 2rem 0;
+    margin: 2em 0;
     border-collapse: collapse;
   }
 
@@ -192,7 +191,7 @@ $font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation M
 
   th, td {
     border: 1px solid #ddd;
-    padding: 0.4rem 0.8rem;
+    padding: 0.4em 0.8em;
   }
 
   tbody tr:nth-child(odd) {
