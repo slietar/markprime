@@ -34,7 +34,7 @@ export default /* abstract */ class CommonBackend {
     if (mainEntry) {
       let metadata = await mainEntry.getMetadata();
 
-      if (metadata) {
+      if (metadata.name) {
         return metadata.name;
       }
     }
@@ -59,11 +59,11 @@ export default /* abstract */ class CommonBackend {
       ? ` (+ ${count} file${(count > 1) ? 's' : ''})`
       : '';
 
-    let rootEntries = tree.children.filter((child) => (child.kind === 'file'));
+    let rootEntries = this.tree.children.filter((child) => (child.kind === 'file'));
     let rootEntriesFormattable = rootEntries.filter((child) => child.format);
 
     for (let child of rootEntriesFormattable) {
-      let name = await child.format.findEntryName?.(child);
+      let name = await child.format.getName(child);
 
       if (name) {
         return name + formatOtherFilesCount(rootEntriesFormattable.length - 1);

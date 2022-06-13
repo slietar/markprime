@@ -133,6 +133,47 @@ $brand-color: #85144b;
       user-select: none;
     }
   }
+
+
+  &-dropzone {
+    &-outer {
+      position: absolute;
+      left: 0;
+      top: 0;
+
+      width: 100vw;
+      height: 100vh;
+
+      padding: 1.2rem 1.6rem;
+
+      @keyframes dropzone-appear {
+        from {
+          opacity: 0;
+          padding: 0.2rem;
+        }
+      }
+
+      animation: dropzone-appear 300ms;
+    }
+
+    &-inner {
+      display: flex;
+      height: 100%;
+
+      backdrop-filter: blur(1px);
+      background-color: rgba(lighten(#0074d9, 50%), 0.9);
+      border: 1px dashed #0074d9;
+      border-radius: 6px;
+    }
+
+    &-text {
+      margin: auto;
+
+      color: #0074d9;
+      font-size: 1.4rem;
+      font-weight: 500;
+    }
+  }
 }
 
 

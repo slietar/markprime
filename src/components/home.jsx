@@ -12,13 +12,23 @@ import { formatRelativeTime } from '../format';
 export default class Home extends React.Component {
   controller = new AbortController();
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      dragging: false
+    };
+  }
+
   componentDidMount() {
     document.addEventListener('paste', (event) => {
-      let backend = FilesBackend.fromDataTransfer(event.clipboardData);
+      pool.add(async () => {
+        let backend = await fromDataTransfer(event.clipboardData);
 
-      if (backend) {
-        this.props.onSelect(backend);
-      }
+        if (backend) {
+          this.props.createWorkspace(backend);
+        }
+      });
     }, { signal: this.controller.signal });
   }
 
@@ -27,34 +37,36 @@ export default class Home extends React.Component {
   }
 
   render() {
-    let workspaces = this.props.workspaces && Object.values(this.props.workspaces);
-
-    if (!workspaces) {
-      return (
-        <div />
-      );
-    }
+    let workspaces = Object.values(this.props.workspaces);
 
     return (
       <div
         className={util.formatClass('home-root', { 'home-root--split': (workspaces.length > 0) })}
         onDragEnter={(event) => {
-          if ((event.target === event.currentTarget) && !event.currentTarget.contains(event.relatedTarget)) {
-            console.log('drag enter', event.dataTransfer.files[0]);
+          if (!event.relatedTarget) {
+            this.setState({ dragging: true });
           }
         }}
         onDragOver={(event) => {
           event.preventDefault();
           event.dataTransfer.dropEffect = 'copy';
         }}
+        onDragLeave={(event) => {
+          if (!event.relatedTarget) {
+            this.setState({ dragging: false });
+          }
+        }}
         onDrop={(event) => {
           event.preventDefault();
+          this.setState({ dragging: false });
 
-          let backend = FilesBackend.fromDataTransfer(event.dataTransfer);
+          pool.add(async () => {
+            let backend = await fromDataTransfer(event.dataTransfer);
 
-          if (backend) {
-            this.props.onSelect(backend);
-          }
+            if (backend) {
+              this.props.createWorkspace(backend);
+            }
+          });
         }}>
         <div className="home-center">
           <div className="home-left">
@@ -80,7 +92,7 @@ export default class Home extends React.Component {
                               'text/markdown': ['.md'],
                               'text/mdx': ['.mdx']
                             }
-                          },
+                          }
                         ]
                       }));
 
@@ -90,16 +102,16 @@ export default class Home extends React.Component {
                       }
                     });
                   } else {
-                    let input = document.createElement('input');
-                    input.multiple = true;
-                    input.type = 'file';
-                    input.accept = '.md,.mdx,text/markdown,text/mdx';
-                    input.addEventListener('change', () => {
-                      let backend = new FilesBackend(input.files);
-                      this.props.onSelect(backend);
-                    });
+                    // let input = document.createElement('input');
+                    // input.multiple = true;
+                    // input.type = 'file';
+                    // input.accept = '.md,.mdx,text/markdown,text/mdx';
+                    // input.addEventListener('change', () => {
+                    //   let backend = new FilesBackend(input.files);
+                    //   this.props.onSelect(backend);
+                    // });
 
-                    input.click();
+                    // input.click();
                   }
                 }}>Select files</button>
                 {window.showDirectoryPicker && (
@@ -156,7 +168,31 @@ export default class Home extends React.Component {
             </div>
           )}
         </div>
+        {this.state.dragging && (
+          <div className="home-dropzone-outer">
+            <div className="home-dropzone-inner">
+              <p className="home-dropzone-text">Drop files here</p>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
+}
+
+
+async function fromDataTransfer(transfer) {
+  let items = Array.from(transfer.items);
+
+  let handles = (await Promise.all(
+    items.map(async (item) => await item.getAsFileSystemHandle())
+  )).filter((handle) => handle);
+
+  // console.log(items[0].webkitGetAsEntry());
+
+  return handles.length > 0
+    ? ((handles.length <= 1) && (handles[0].kind === 'directory'))
+      ? FSAccessBackend.fromDirectoryHandle(handles[0])
+      : FSAccessBackend.fromHandles(handles)
+    : null;
 }
