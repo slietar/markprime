@@ -162,7 +162,10 @@ export default class MarkdownRenderer extends React.Component {
   }
 
   // Note: only detects ATX headings
-  static async findName(contents) {
+  static async getName(entry) {
+    let blob = await entry.getBlob();
+    let contents = await blob.text();
+
     let match = (/(?:^|\n) {0,3}#[ \t]*([^\n]+?)[ \t]*?(?:[ \t]#+)?[ \t]*(?:$|\n)/).exec(contents);
     return match?.[1] ?? null;
   }

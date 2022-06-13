@@ -254,4 +254,8 @@ export default class MDXRenderer extends React.Component {
       errorMessage: err.message || true
     };
   }
+
+  static async getName(entry) {
+    return null;
+  }
 }

@@ -82,11 +82,13 @@ export default class App extends React.Component {
               this.setState({ loading: true });
 
               pool.add(async () => {
-                let name = await backend.findName();
+                await backend.loadTree();
+
+                let metadata = await backend.getMetadata();
                 let workspace = {
                   id: backend.id,
                   lastOpened: Date.now(),
-                  name,
+                  name: metadata.name,
                   source: await backend.saveSource(),
                   type: backend.constructor.name
                 };
