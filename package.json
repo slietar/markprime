@@ -1,5 +1,5 @@
 {
-  "name": "md-viewer",
+  "name": "markprime",
   "version": "2.0.0",
   "scripts": {
     "build": "npm run build:css && npm run build:public && npm run build:js && npm run build:js:sw",

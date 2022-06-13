@@ -126,10 +126,10 @@ export default class Home extends React.Component {
                     })
                   }}>Select directory</button>
                 )}
-                <button type="button" className="home-button home-button--github">
+                {/* <button type="button" className="home-button home-button--github">
                   <Icon name="github" />
                   <div>Open GitHub gist</div>
-                </button>
+                </button> */}
               </div>
             </div>
           </div>

@@ -9,7 +9,8 @@ jobs:
           node-version: '16'
       - run: npm install
       - run: npm run build
-      - run: echo "md.xn--litar-csa.net" > dist/CNAME
+      - run: echo "markpri.me" > dist/CNAME
+      - run: cp dist/index.html dist/404.html
       - uses: crazy-max/ghaction-github-pages@v2
         with:
           target_branch: gh-pages
