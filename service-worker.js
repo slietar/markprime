@@ -1,0 +1,1 @@
+(()=>{self.addEventListener("fetch",function(t){new URL(t.request.url).origin==="https://unpkg.com"&&t.respondWith(caches.open("unpkg").then(function(n){return n.match(t.request).then(function(e){return e||fetch(t.request).then(function(u){return n.put(t.request,u.clone()),u})})}))});})();
